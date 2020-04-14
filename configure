@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import sys
+import re
+
+vf = sys.version_info
+python_version = f'{vf.major}.{vf.minor}'
+
+try:
+    import yaml
+except ImportError:
+    print("PyYAML it is not installed, please install the python package: pyyaml.")
+    print("python -m pip install -U pyyaml")
+
+with open("serverless-tpl.yml", "r") as sls_tpl:
+    # Load sls template.
+    sls_yml = yaml.safe_load(sls_tpl)
+
+    print("-" * 80)
+    print("Starting configuration of the layer, please be aware all values you provide \n"
+          "here must be compatible with values expected by AWS services.")
+    print("-" * 80)
+
+    layer_name_requirements = (
+        "Enter the layer name, the layer name you provide will be "
+        "suffixed with the suffix '-layer'.\n"
+        "IMPORTANT: \n"
+        "1. Layer name must only contains characters in ([a-Z0-9]-).\n"
+        "2. Layer name must not start with a number or '-'.\n"
+    )
+
+    print(layer_name_requirements)
+
+    layer_name = input("Layer name: ")
+
+    if not re.match(r"[a-zA-Z](\W|\d|-)*", layer_name):
+        print("Error: Layer name do not match requirements: ")
+        print(layer_name_requirements)
+        sys.exit(1)
+
+    deployment_bucket = input("Enter deployment bucket name: ")
+    deployment_prefix = input("Enter deployment bucket prefix [serverless]: ") or 'serverless'
+
+    python_version = input(f"Enter python version [{python_version}]: ") or python_version
+
+    sls_yml['service'] = f'{layer_name}-layer'
+    sls_yml['provider']['deploymentBucket']['name'] = deployment_bucket
+    sls_yml['provider']['deploymentPrefix'] = deployment_prefix
+
+    layer_final_name = "".join([token.capitalize() for token in layer_name.split("-")])
+
+    sls_yml['layers'] = {f'{layer_final_name}': {'path': 'layer'}}
+
+    sls_yml['resources']['Outputs'] = {
+        f'{layer_final_name}LambdaLayer': {
+            'Value': {
+                'Ref': f'{layer_final_name}LambdaLayer'
+            },
+            'Export': {
+                'Name': f'{layer_final_name}LambdaLayer'
+            }
+        }
+    }
+
+    with open("serverless.yml", 'w') as sls_file:
+        yaml.dump(sls_yml, sls_file)
+
+    with open("python_version", 'w') as python_version_file:
+        python_version_file.write(python_version)
+
+    print(
+        f"""
+        Layer configuration ready!
+        
+        You can reference this layer in other projects by adding the layer cloud-formation
+        reference to the layer list of your functions:
+        
+        layers:
+          - ${{cf:{layer_name}-layer-${{self:provider.stage}}.{layer_final_name}LambdaLayer}}
+        """
+    )
