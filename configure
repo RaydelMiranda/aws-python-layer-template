@@ -77,5 +77,11 @@ with open("serverless-tpl.yml", "r") as sls_tpl:
         
         layers:
           - ${{cf:{layer_name}-layer-${{self:provider.stage}}.{layer_final_name}LambdaLayer}}
+
+        What's next?
+        ------------
+
+        Add requirements to requirements.txt file as usual and run the build-layer.sh script. After that
+        you can deploy the layer using serverless.
         """
     )
