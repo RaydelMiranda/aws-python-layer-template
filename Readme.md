@@ -1,7 +1,7 @@
 # AWS Python Lambda Layer template.
 
 Lambda layers allow to deploy sources that can be used for several services, this avoid
-duplicated dependencies and reduces the storage capacity used by services. 
+duplicated dependencies and reduces the storage used by services. 
 
 ## Usage
 
