@@ -1,23 +1,12 @@
 service: service-name-layer
 
 # -----------------------------------------------------------------------------
-# Plugins
-# -----------------------------------------------------------------------------
-
-plugins:
-  - serverless-deployment-bucket
-
-# -----------------------------------------------------------------------------
 # Provider specification
 # -----------------------------------------------------------------------------
 
 provider:
   name: aws
-  deploymentBucket:
-    name: <deployment-bucket>
-    serverSideEncryption: AES256
-  deploymentPrefix: serverless
-
+  deploymentBucket: em-serverless-apps-${self:provider.region}-${self:provider.account}
 
 # -----------------------------------------------------------------------------
 # Package settings
