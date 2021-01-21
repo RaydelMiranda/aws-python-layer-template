@@ -39,14 +39,9 @@ with open("serverless-tpl.yml", "r") as sls_tpl:
         print(layer_name_requirements)
         sys.exit(1)
 
-    deployment_bucket = input("Enter deployment bucket name: ")
-    deployment_prefix = input("Enter deployment bucket prefix [serverless]: ") or 'serverless'
-
     python_version = input(f"Enter python version [{python_version}]: ") or python_version
 
     sls_yml['service'] = f'{layer_name}-layer'
-    sls_yml['provider']['deploymentBucket']['name'] = deployment_bucket
-    sls_yml['provider']['deploymentPrefix'] = deployment_prefix
 
     layer_final_name = "".join([token.capitalize() for token in layer_name.split("-")])
 
