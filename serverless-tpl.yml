@@ -7,6 +7,7 @@ service: service-name-layer
 provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
   account: ${opt:account}
   deploymentBucket: em-serverless-apps-${self:provider.region}-${self:provider.account}
 
@@ -36,4 +37,4 @@ resources:
       Value:
         Ref: LayerNameLambdaLayer
       Export:
-        Name: LayerNameLambdaLayer
+        Name: LayerNameLambdaLayer-${self:provider.stage}
