@@ -6,8 +6,9 @@ service: service-name-layer
 
 provider:
   name: aws
+  region: ${opt:region, 'us-east-1'}
+  account: ${opt:account}
   deploymentBucket: em-serverless-apps-${self:provider.region}-${self:provider.account}
-  region: ${opt:region, 'us-west-2'}
 
 # -----------------------------------------------------------------------------
 # Package settings
